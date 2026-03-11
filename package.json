@@ -1,0 +1,12 @@
+{
+  "name": "survey-pro-app",
+  "version": "1.0.0",
+  "description": "Mobile-first Web Survey System",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'No build step needed'"
+  },
+  "keywords": ["survey", "mobile-first", "supabase"],
+  "author": "",
+  "license": "MIT"
+}

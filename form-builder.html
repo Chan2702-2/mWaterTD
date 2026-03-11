@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0ea5e9">
+  
+  <title>Form Builder - Survey Pro Admin</title>
+  
+  <!-- Custom CSS (Mobile-First) -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="min-h-screen bg-surface-50">
+  
+  <!-- Form Builder Page -->
+  <div id="form-builder-page">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="flex items-center justify-between">
+        <button onclick="window.location.href='index.html'" class="p-2 -ml-2 hover:bg-surface-100 rounded-lg">
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h1 class="text-lg font-bold text-gray-900">Buat Form Survey</h1>
+        <button onclick="FormBuilder.saveForm()" class="text-primary-600 font-medium text-sm">
+          Simpan
+        </button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4 pb-24 space-y-4">
+      <!-- Form Title -->
+      <div class="card">
+        <div class="form-field mb-0">
+          <label class="input-label">Judul Form</label>
+          <input type="text" id="form-title" class="input" placeholder="Survey Kepuasan Pelanggan">
+        </div>
+        <div class="form-field mb-0 mt-4">
+          <label class="input-label">Deskripsi (Opsional)</label>
+          <textarea id="form-description" class="form-field-textarea min-h-[80px]" placeholder="Deskripsi singkat tentang survey ini"></textarea>
+        </div>
+      </div>
+
+      <!-- Questions List -->
+      <div id="questions-container" class="space-y-4">
+        <!-- Questions will be rendered here -->
+      </div>
+
+      <!-- Add Question Button -->
+      <button onclick="FormBuilder.addQuestion()" class="btn-secondary btn-lg w-full">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Tambah Pertanyaan
+      </button>
+
+      <!-- Preview Button -->
+      <button onclick="FormBuilder.previewForm()" class="btn-ghost btn-lg w-full">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        </svg>
+        Preview Form
+      </button>
+    </div>
+
+    <!-- Question Type Modal -->
+    <div id="question-type-modal" class="modal-overlay hidden">
+      <div class="modal-content p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Pilih Tipe Pertanyaan</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="FormBuilder.selectQuestionType('text')" class="btn-secondary p-4 flex flex-col items-center">
+            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+            </svg>
+            <span class="text-sm">Teks</span>
+          </button>
+          <button onclick="FormBuilder.selectQuestionType('number')" class="btn-secondary p-4 flex flex-col items-center">
+            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+            </svg>
+            <span class="text-sm">Angka</span>
+          </button>
+          <button onclick="FormBuilder.selectQuestionType('textarea')" class="btn-secondary p-4 flex flex-col items-center">
+            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+            </svg>
+            <span class="text-sm">Teks Panjang</span>
+          </button>
+          <button onclick="FormBuilder.selectQuestionType('date')" class="btn-secondary p-4 flex flex-col items-center">
+            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span class="text-sm">Tanggal</span>
+          </button>
+          <button onclick="FormBuilder.selectQuestionType('dropdown')" class="btn-secondary p-4 flex flex-col items-center">
+            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+            </svg>
+            <span class="text-sm">Dropdown</span>
+          </button>
+          <button onclick="FormBuilder.selectQuestionType('checkbox')" class="btn-secondary p-4 flex flex-col items-center">
+            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+            <span class="text-sm">Checkbox</span>
+          </button>
+          <button onclick="FormBuilder.selectQuestionType('photo')" class="btn-secondary p-4 flex flex-col items-center">
+            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="text-sm">Foto</span>
+          </button>
+          <button onclick="FormBuilder.selectQuestionType('gps')" class="btn-secondary p-4 flex flex-col items-center">
+            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="text-sm">GPS</span>
+          </button>
+        </div>
+        <button onclick="FormBuilder.closeModal()" class="btn-ghost w-full mt-4">Batal</button>
+      </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal-overlay hidden">
+      <div class="modal-content p-6 max-h-[80vh]">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-gray-900">Preview Form</h2>
+          <button onclick="FormBuilder.closePreview()" class="p-2 hover:bg-surface-100 rounded-lg">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div id="preview-content" class="space-y-4 max-h-[60vh] overflow-y-auto"></div>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="builder-loader" class="fixed inset-0 bg-white/80 z-50 flex items-center justify-center hidden">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Form Builder Script -->
+  <script src="js/supabase.js"></script>
+  <script>
+    // Form Builder Logic
+    const FormBuilder = {
+      questions: [],
+      editingIndex: null,
+
+      init() {
+        this.loadFormsList();
+      },
+
+      async loadFormsList() {
+        const container = document.getElementById('forms-list');
+        if (!container) return;
+
+        try {
+          const forms = await window.SurveyApp.Forms.getAll();
+          if (forms.length === 0) {
+            container.innerHTML = `
+              <div class="text-center py-8">
+                <p class="text-gray-500">Belum ada form. Buat form baru!</p>
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = `
+            <div class="space-y-3">
+              ${forms.map(form => `
+                <div class="card">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="font-semibold">${form.title}</h3>
+                      <p class="text-sm text-gray-500">${form.description || ''}</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <button onclick="FormBuilder.editForm('${form.id}')" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                      </button>
+                      <button onclick="FormBuilder.deleteForm('${form.id}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } catch (error) {
+          console.error('Load forms error:', error);
+        }
+      },
+
+      addQuestion() {
+        this.editingIndex = null;
+        this.openModal();
+      },
+
+      editQuestion(index) {
+        this.editingIndex = index;
+        const question = this.questions[index];
+        
+        // Show edit modal with current question data
+        const modal = document.getElementById('question-type-modal');
+        modal.classList.remove('hidden');
+        
+        // Pre-fill with current question
+        document.getElementById(`question-text-${index}`).focus();
+      },
+
+      selectQuestionType(type) {
+        const index = this.editingIndex !== null ? this.editingIndex : this.questions.length;
+        
+        if (this.editingIndex === null) {
+          // Add new question
+          this.questions.push({
+            type,
+            question_text: '',
+            required: false,
+            options: ''
+          });
+        }
+        
+        this.closeModal();
+        this.renderQuestions();
+        
+        // Focus on the new question text input
+        setTimeout(() => {
+          const input = document.getElementById(`question-text-${index}`);
+          if (input) input.focus();
+        }, 100);
+      },
+
+      updateQuestion(index, field, value) {
+        this.questions[index][field] = value;
+      },
+
+      deleteQuestion(index) {
+        if (confirm('Hapus pertanyaan ini?')) {
+          this.questions.splice(index, 1);
+          this.renderQuestions();
+        }
+      },
+
+      renderQuestions() {
+        const container = document.getElementById('questions-container');
+        if (!container) return;
+
+        if (this.questions.length === 0) {
+          container.innerHTML = `
+            <div class="card text-center py-8">
+              <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <p class="text-gray-500">Belum ada pertanyaan</p>
+              <p class="text-sm text-gray-400">Klik "Tambah Pertanyaan" untuk mulai</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = this.questions.map((q, index) => `
+          <div class="card animate-slide-up">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center text-sm font-medium">
+                  ${index + 1}
+                </span>
+                <span class="chip-primary text-xs">${this.getTypeLabel(q.type)}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="FormBuilder.editQuestion(${index})" class="p-2 text-gray-400 hover:text-primary-600 hover:bg-surface-100 rounded-lg">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                  </svg>
+                </button>
+                <button onclick="FormBuilder.deleteQuestion(${index})" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-field mb-3">
+              <input type="text" id="question-text-${index}" class="input" 
+                placeholder="Pertanyaan..." value="${q.question_text}"
+                oninput="FormBuilder.updateQuestion(${index}, 'question_text', this.value)">
+            </div>
+
+            <div class="flex items-center justify-between">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" ${q.required ? 'checked' : ''} 
+                  onchange="FormBuilder.updateQuestion(${index}, 'required', this.checked)"
+                  class="w-4 h-4 rounded text-primary-600">
+                <span class="text-sm text-gray-600">Wajib diisi</span>
+              </label>
+            </div>
+
+            ${['dropdown', 'checkbox'].includes(q.type) ? `
+              <div class="form-field mt-3">
+                <label class="text-xs text-gray-500 mb-1 block">Opsi (pisahkan dengan koma)</label>
+                <input type="text" class="input text-sm" placeholder="Opsi 1, Opsi 2, Opsi 3" 
+                  value="${q.options || ''}"
+                  oninput="FormBuilder.updateQuestion(${index}, 'options', this.value)">
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+      },
+
+      getTypeLabel(type) {
+        const labels = {
+          text: 'Teks',
+          number: 'Angka',
+          textarea: 'Teks Panjang',
+          date: 'Tanggal',
+          dropdown: 'Dropdown',
+          checkbox: 'Checkbox',
+          photo: 'Foto',
+          gps: 'GPS'
+        };
+        return labels[type] || type;
+      },
+
+      openModal() {
+        const modal = document.getElementById('question-type-modal');
+        modal.classList.remove('hidden');
+      },
+
+      closeModal() {
+        const modal = document.getElementById('question-type-modal');
+        modal.classList.add('hidden');
+      },
+
+      previewForm() {
+        const title = document.getElementById('form-title').value || 'Preview Form';
+        const description = document.getElementById('form-description').value;
+        
+        const previewContent = document.getElementById('preview-content');
+        previewContent.innerHTML = `
+          <div class="mb-4">
+            <h3 class="font-bold text-lg">${title}</h3>
+            ${description ? `<p class="text-sm text-gray-500">${description}</p>` : ''}
+          </div>
+          ${this.questions.length === 0 ? `
+            <p class="text-gray-500 text-center py-4">Belum ada pertanyaan</p>
+          ` : this.questions.map((q, index) => `
+            <div class="form-field">
+              <label class="input-label">
+                ${index + 1}. ${q.question_text || 'Pertanyaan'} 
+                ${q.required ? '<span class="text-red-500">*</span>' : ''}
+              </label>
+              ${this.renderPreviewField(q, index)}
+            </div>
+          `).join('')}
+        `;
+
+        const modal = document.getElementById('preview-modal');
+        modal.classList.remove('hidden');
+      },
+
+      renderPreviewField(question, index) {
+        switch (question.type) {
+          case 'text':
+            return '<input type="text" class="input" placeholder="Masukkan teks">';
+          case 'number':
+            return '<input type="number" class="input" placeholder="Masukkan angka">';
+          case 'textarea':
+            return '<textarea class="form-field-textarea" placeholder="Masukkan teks panjang"></textarea>';
+          case 'date':
+            return '<input type="date" class="input">';
+          case 'dropdown':
+            const options = question.options ? question.options.split(',') : [];
+            return `
+              <select class="input">
+                <option value="">Pilih...</option>
+                ${options.map(opt => `<option value="${opt.trim()}">${opt.trim()}</option>`).join('')}
+              </select>
+            `;
+          case 'checkbox':
+            const checkOptions = question.options ? question.options.split(',') : [];
+            return `
+              <div class="space-y-2">
+                ${checkOptions.map(opt => `
+                  <label class="flex items-center gap-3 p-3 rounded-lg border border-surface-200">
+                    <input type="checkbox" class="w-5 h-5 rounded text-primary-600">
+                    <span>${opt.trim()}</span>
+                  </label>
+                `).join('')}
+              </div>
+            `;
+          case 'photo':
+            return `
+              <div class="photo-upload">
+                <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <p class="text-sm text-gray-500">Klik untuk mengambil foto</p>
+              </div>
+            `;
+          case 'gps':
+            return '<button type="button" class="btn-secondary w-full">📍 Ambil Koordinat</button>';
+          default:
+            return '<input type="text" class="input">';
+        }
+      },
+
+      closePreview() {
+        const modal = document.getElementById('preview-modal');
+        modal.classList.add('hidden');
+      },
+
+      async saveForm() {
+        const title = document.getElementById('form-title').value.trim();
+        const description = document.getElementById('form-description').value.trim();
+
+        if (!title) {
+          alert('Mohon isi judul form');
+          return;
+        }
+
+        if (this.questions.length === 0) {
+          alert('Mohon tambahkan minimal 1 pertanyaan');
+          return;
+        }
+
+        // Validate questions
+        for (let i = 0; i < this.questions.length; i++) {
+          const q = this.questions[i];
+          if (!q.question_text.trim()) {
+            alert(`Mohon isi pertanyaan nomor ${i + 1}`);
+            return;
+          }
+          if (['dropdown', 'checkbox'].includes(q.type) && !q.options.trim()) {
+            alert(`Mohon isi opsi untuk pertanyaan nomor ${i + 1}`);
+            return;
+          }
+        }
+
+        this.showLoading(true);
+
+        try {
+          // Create form
+          const form = await window.SurveyApp.Forms.create({
+            title,
+            description,
+            created_at: new Date().toISOString()
+          });
+
+          // Create questions
+          const questionsToInsert = this.questions.map(q => ({
+            form_id: form.id,
+            question_text: q.question_text,
+            type: q.type,
+            required: q.required,
+            options: q.options || null
+          }));
+
+          await window.SurveyApp.Questions.createMany(questionsToInsert);
+
+          alert('Form berhasil disimpan!');
+          
+          // Reset form
+          document.getElementById('form-title').value = '';
+          document.getElementById('form-description').value = '';
+          this.questions = [];
+          this.renderQuestions();
+
+        } catch (error) {
+          console.error('Save form error:', error);
+          alert('Gagal menyimpan form: ' + error.message);
+        }
+
+        this.showLoading(false);
+      },
+
+      async editForm(formId) {
+        this.showLoading(true);
+        try {
+          const form = await window.SurveyApp.Forms.getById(formId);
+          const questions = await window.SurveyApp.Questions.getByFormId(formId);
+
+          document.getElementById('form-title').value = form.title;
+          document.getElementById('form-description').value = form.description || '';
+          this.questions = questions.map(q => ({
+            type: q.type,
+            question_text: q.question_text,
+            required: q.required,
+            options: q.options || ''
+          }));
+
+          this.renderQuestions();
+        } catch (error) {
+          console.error('Edit form error:', error);
+          alert('Gagal memuat form');
+        }
+        this.showLoading(false);
+      },
+
+      async deleteForm(formId) {
+        if (!confirm('Yakin hapus form ini? Semua data survey juga akan dihapus.')) return;
+
+        this.showLoading(true);
+        try {
+          await window.SurveyApp.Forms.delete(formId);
+          alert('Form dihapus');
+          this.loadFormsList();
+        } catch (error) {
+          console.error('Delete form error:', error);
+          alert('Gagal menghapus form');
+        }
+        this.showLoading(false);
+      },
+
+      showLoading(show) {
+        const loader = document.getElementById('builder-loader');
+        if (loader) loader.classList.toggle('hidden', !show);
+      }
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      FormBuilder.init();
+    });
+  </script>
+</body>
+</html>

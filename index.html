@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0ea5e9">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <title>Survey Pro - Aplikasi Survey Lapangan</title>
+  
+  <!-- Custom CSS (Mobile-First) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body class="min-h-screen bg-surface-50">
+  
+  <!-- Login Page -->
+  <div id="login-page" class="page">
+    <div class="min-h-screen flex flex-col">
+      <!-- Header -->
+      <div class="flex-1 flex flex-col justify-center items-center px-6 py-12">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+          <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-elevated">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+          </div>
+          <h1 class="text-3xl font-bold text-gray-900">Survey Pro</h1>
+          <p class="text-gray-500 mt-2">Aplikasi Survey Lapangan Mobile</p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="w-full max-w-sm space-y-4">
+          <div>
+            <label for="login-email" class="input-label">Email</label>
+            <input type="email" id="login-email" class="input" placeholder="email@anda.com" required autocomplete="email">
+          </div>
+          <div>
+            <label for="login-password" class="input-label">Password</label>
+            <input type="password" id="login-password" class="input" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <button type="submit" id="login-btn" class="btn-primary btn-lg w-full">
+            Masuk
+          </button>
+        </form>
+
+        <!-- Signup Form (Hidden by default) -->
+        <form id="signup-form" class="w-full max-w-sm space-y-4 hidden">
+          <div>
+            <label for="signup-name" class="input-label">Nama Lengkap</label>
+            <input type="text" id="signup-name" class="input" placeholder="Nama Anda" required>
+          </div>
+          <div>
+            <label for="signup-email" class="input-label">Email</label>
+            <input type="email" id="signup-email" class="input" placeholder="email@anda.com" required autocomplete="email">
+          </div>
+          <div>
+            <label for="signup-password" class="input-label">Password</label>
+            <input type="password" id="signup-password" class="input" placeholder="••••••••" required autocomplete="new-password">
+          </div>
+          <button type="submit" id="signup-btn" class="btn-primary btn-lg w-full">
+            Daftar
+          </button>
+        </form>
+
+        <!-- Toggle Auth Mode -->
+        <div class="mt-6 text-center">
+          <button type="button" onclick="AuthPage.toggleAuthMode()" class="text-primary-600 font-medium hover:underline">
+            <span id="toggle-text">Belum punya akun? Daftar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-4 text-center text-sm text-gray-400">
+        © 2024 Survey Pro. All rights reserved.
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Page -->
+  <div id="dashboard-page" class="page hidden">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-bold text-gray-900">Dashboard</h1>
+        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+          <span class="text-sm font-bold text-primary-600" id="user-initial">U</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4 pb-24 space-y-4">
+      <!-- Stats -->
+      <div id="stats-container">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="stat-card">
+            <div class="spinner"></div>
+          </div>
+          <div class="stat-card">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map Preview -->
+      <div class="card">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold text-gray-900">Peta Lokasi Survey</h2>
+          <a href="#" onclick="Navigation.navigate('map-view'); return false;" class="text-sm text-primary-600 font-medium">Lihat Full</a>
+        </div>
+        <div id="dashboard-map" class="map-container h-48"></div>
+      </div>
+
+      <!-- Recent Surveys -->
+      <div>
+        <h2 class="font-semibold text-gray-900 mb-3">Survey Terbaru</h2>
+        <div id="recent-surveys">
+          <div class="card py-8 text-center">
+            <div class="spinner mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="dashboard-loader" class="fixed inset-0 bg-white/80 z-50 flex items-center justify-center hidden">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Survey Page -->
+  <div id="survey-page" class="page hidden">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-bold text-gray-900">Survey</h1>
+        <span class="text-sm text-gray-500">Pilih form</span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4 pb-24">
+      <div id="forms-list" class="space-y-3">
+        <div class="card py-8 text-center">
+          <div class="spinner mx-auto"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="survey-loader" class="fixed inset-0 bg-white/80 z-50 flex items-center justify-center hidden">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Survey Form Page -->
+  <div id="survey-form-page" class="page hidden">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="flex items-center justify-between">
+        <button id="survey-form-back" class="p-2 -ml-2 hover:bg-surface-100 rounded-lg">
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h1 class="text-lg font-bold text-gray-900">Isi Survey</h1>
+        <div class="w-8"></div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4">
+      <div id="survey-form-container">
+        <div class="card py-8 text-center">
+          <div class="spinner mx-auto"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Page -->
+  <div id="data-page" class="page hidden">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-bold text-gray-900">Data Survey</h1>
+        <div class="flex items-center gap-2">
+          <button onclick="DataPage.exportData('csv')" class="p-2 text-gray-600 hover:bg-surface-100 rounded-lg" title="Export CSV">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4 pb-24 space-y-4">
+      <!-- Filters -->
+      <div id="data-filters"></div>
+
+      <!-- Surveys List -->
+      <div id="surveys-list" class="space-y-3"></div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal-overlay hidden">
+      <div class="modal-content p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-gray-900">Detail Survey</h2>
+          <button onclick="document.getElementById('detail-modal').classList.add('hidden')" class="p-2 hover:bg-surface-100 rounded-lg">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div id="detail-content"></div>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="data-loader" class="fixed inset-0 bg-white/80 z-50 flex items-center justify-center hidden">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Map View Page -->
+  <div id="map-view-page" class="page hidden">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="flex items-center justify-between">
+        <button onclick="Navigation.navigate('dashboard')" class="p-2 -ml-2 hover:bg-surface-100 rounded-lg">
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h1 class="text-lg font-bold text-gray-900">Peta Survey</h1>
+        <div class="w-8"></div>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div id="full-map" class="h-[calc(100vh-60px)]"></div>
+  </div>
+
+  <!-- Profile Page -->
+  <div id="profile-page" class="page hidden">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-bold text-gray-900">Profil</h1>
+        <div class="w-8"></div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4 pb-24">
+      <div id="profile-content"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="flex items-center justify-around">
+      <a href="#" class="bottom-nav-item active" data-page="dashboard">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span class="text-xs mt-1">Home</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-page="survey">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span class="text-xs mt-1">Survey</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-page="data">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+        </svg>
+        <span class="text-xs mt-1">Data</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-page="profile">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+        <span class="text-xs mt-1">Profil</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  
+  <!-- PWA Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered:', registration.scope);
+          })
+          .catch(error => {
+            console.log('SW registration failed:', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
