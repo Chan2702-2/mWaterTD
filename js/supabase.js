@@ -1,8 +1,11 @@
 // Supabase Configuration
-// Using CDN - no local credentials needed
+// Using CDN - properly extract createClient from global supabase
 
-// Get Supabase from global window object (loaded via CDN)
-const supabase = window.supabase.createClient(
+// Extract createClient from the global supabase object (loaded via CDN)
+const { createClient } = supabase;
+
+// Create the Supabase client
+const supabaseClient = createClient(
   'https://xmvikikzktwzsiuxqilw.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtdmlraWt6a3R3enNpdXhxaWx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg4MTMsImV4cCI6MjA4ODgxNDgxM30.L25WMkUsGOdMyskFQhisOjxTgjF6q6s5cOZ9Uj_AU1s'
 );
@@ -21,7 +24,7 @@ const DB_SCHEMA = {
 // Auth helpers
 const Auth = {
   async signIn(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
     });
@@ -30,7 +33,7 @@ const Auth = {
   },
 
   async signUp(email, password, userData) {
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabaseClient.auth.signUp({
       email,
       password,
       options: {
@@ -42,25 +45,25 @@ const Auth = {
   },
 
   async signOut() {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabaseClient.auth.signOut();
     if (error) throw error;
   },
 
   async getCurrentUser() {
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const { data: { user }, error } = await supabaseClient.auth.getUser();
     if (error) throw error;
     return user;
   },
 
   onAuthStateChange(callback) {
-    return supabase.auth.onAuthStateChange(callback);
+    return supabaseClient.auth.onAuthStateChange(callback);
   }
 };
 
 // User/Profile helpers
 const Users = {
   async getProfile(userId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.users)
       .select('*')
       .eq('id', userId)
@@ -70,7 +73,7 @@ const Users = {
   },
 
   async updateProfile(userId, updates) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.users)
       .update(updates)
       .eq('id', userId)
@@ -81,7 +84,7 @@ const Users = {
   },
 
   async getSurveyors() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.users)
       .select('*')
       .eq('role', 'surveyor');
@@ -93,7 +96,7 @@ const Users = {
 // Form helpers
 const Forms = {
   async create(formData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.forms)
       .insert([formData])
       .select()
@@ -103,7 +106,7 @@ const Forms = {
   },
 
   async getAll() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.forms)
       .select('*')
       .order('created_at', { ascending: false });
@@ -112,7 +115,7 @@ const Forms = {
   },
 
   async getById(formId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.forms)
       .select('*')
       .eq('id', formId)
@@ -122,7 +125,7 @@ const Forms = {
   },
 
   async update(formId, updates) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.forms)
       .update(updates)
       .eq('id', formId)
@@ -134,13 +137,13 @@ const Forms = {
 
   async delete(formId) {
     // First delete all questions
-    await supabase
+    await supabaseClient
       .from(DB_SCHEMA.tables.questions)
       .delete()
       .eq('form_id', formId);
     
     // Then delete the form
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from(DB_SCHEMA.tables.forms)
       .delete()
       .eq('id', formId);
@@ -151,7 +154,7 @@ const Forms = {
 // Question helpers
 const Questions = {
   async create(questionData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.questions)
       .insert([questionData])
       .select()
@@ -161,7 +164,7 @@ const Questions = {
   },
 
   async createMany(questions) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.questions)
       .insert(questions)
       .select();
@@ -170,7 +173,7 @@ const Questions = {
   },
 
   async getByFormId(formId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.questions)
       .select('*')
       .eq('form_id', formId)
@@ -180,7 +183,7 @@ const Questions = {
   },
 
   async update(questionId, updates) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.questions)
       .update(updates)
       .eq('id', questionId)
@@ -191,7 +194,7 @@ const Questions = {
   },
 
   async delete(questionId) {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from(DB_SCHEMA.tables.questions)
       .delete()
       .eq('id', questionId);
@@ -202,7 +205,7 @@ const Questions = {
 // Survey helpers
 const Surveys = {
   async create(surveyData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.surveys)
       .insert([surveyData])
       .select()
@@ -212,7 +215,7 @@ const Surveys = {
   },
 
   async getAll(filters = {}) {
-    let query = supabase
+    let query = supabaseClient
       .from(DB_SCHEMA.tables.surveys)
       .select(`
         *,
@@ -228,7 +231,7 @@ const Surveys = {
       query = query.eq('user_id', filters.userId);
     }
     if (filters.dateFrom) {
-      query = querygte('created_at', filters.dateFrom);
+      query = query.gte('created_at', filters.dateFrom);
     }
     if (filters.dateTo) {
       query = query.lte('created_at', filters.dateTo);
@@ -240,7 +243,7 @@ const Surveys = {
   },
 
   async getById(surveyId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.surveys)
       .select(`
         *,
@@ -258,7 +261,7 @@ const Surveys = {
     today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString();
 
-    let query = supabase
+    let query = supabaseClient
       .from(DB_SCHEMA.tables.surveys)
       .select('id, created_at', { count: 'exact' });
 
@@ -268,7 +271,7 @@ const Surveys = {
 
     const { data: allData, count: totalCount } = await query;
 
-    const todayQuery = supabase
+    const todayQuery = supabaseClient
       .from(DB_SCHEMA.tables.surveys)
       .select('id', { count: 'exact' })
       .gte('created_at', todayStr);
@@ -290,7 +293,7 @@ const Surveys = {
     today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString();
 
-    let query = supabase
+    let query = supabaseClient
       .from(DB_SCHEMA.tables.surveys)
       .select(`
         *,
@@ -311,13 +314,13 @@ const Surveys = {
 
   async delete(surveyId) {
     // Delete answers first
-    await supabase
+    await supabaseClient
       .from(DB_SCHEMA.tables.answers)
       .delete()
       .eq('survey_id', surveyId);
 
     // Then delete survey
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from(DB_SCHEMA.tables.surveys)
       .delete()
       .eq('id', surveyId);
@@ -328,7 +331,7 @@ const Surveys = {
 // Answer helpers
 const Answers = {
   async create(answerData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.answers)
       .insert([answerData])
       .select()
@@ -338,7 +341,7 @@ const Answers = {
   },
 
   async createMany(answers) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.answers)
       .insert(answers)
       .select();
@@ -347,7 +350,7 @@ const Answers = {
   },
 
   async getBySurveyId(surveyId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from(DB_SCHEMA.tables.answers)
       .select(`
         *,
@@ -363,13 +366,13 @@ const Answers = {
 const Storage = {
   async uploadPhoto(file, userId) {
     const fileName = `${userId}/${Date.now()}_${file.name}`;
-    const { data, error } = await supabase.storage
+    const { data, error } = await supabaseClient.storage
       .from('survey-photos')
       .upload(fileName, file);
     if (error) throw error;
     
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
+    const { data: { publicUrl } } = supabaseClient.storage
       .from('survey-photos')
       .getPublicUrl(fileName);
     
@@ -379,7 +382,7 @@ const Storage = {
   async deletePhoto(url) {
     // Extract file path from URL
     const path = url.split('/').slice(-2).join('/');
-    const { error } = await supabase.storage
+    const { error } = await supabaseClient.storage
       .from('survey-photos')
       .remove([path]);
     if (error) throw error;
@@ -388,7 +391,7 @@ const Storage = {
 
 // Export all helpers
 window.SurveyApp = {
-  supabase,
+  supabase: supabaseClient,
   Auth,
   Users,
   Forms,
