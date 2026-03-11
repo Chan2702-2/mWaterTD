@@ -60,82 +60,101 @@ ALTER TABLE public.surveys ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.answers ENABLE ROW LEVEL SECURITY;
 
 -- Create Policies for profiles
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
 CREATE POLICY "Admins can view all profiles" ON public.profiles
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
+DROP POLICY IF EXISTS "Admins can update all profiles" ON public.profiles;
 CREATE POLICY "Admins can update all profiles" ON public.profiles
   FOR UPDATE USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
 -- Create Policies for forms
+DROP POLICY IF EXISTS "Anyone can view forms" ON public.forms;
 CREATE POLICY "Anyone can view forms" ON public.forms
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Admins can insert forms" ON public.forms;
 CREATE POLICY "Admins can insert forms" ON public.forms
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
+DROP POLICY IF EXISTS "Admins can update forms" ON public.forms;
 CREATE POLICY "Admins can update forms" ON public.forms
   FOR UPDATE USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
+DROP POLICY IF EXISTS "Admins can delete forms" ON public.forms;
 CREATE POLICY "Admins can delete forms" ON public.forms
   FOR DELETE USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
 -- Create Policies for questions
+DROP POLICY IF EXISTS "Anyone can view questions" ON public.questions;
 CREATE POLICY "Anyone can view questions" ON public.questions
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Admins can insert questions" ON public.questions;
 CREATE POLICY "Admins can insert questions" ON public.questions
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
+DROP POLICY IF EXISTS "Admins can update questions" ON public.questions;
 CREATE POLICY "Admins can update questions" ON public.questions
   FOR UPDATE USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
+DROP POLICY IF EXISTS "Admins can delete questions" ON public.questions;
 CREATE POLICY "Admins can delete questions" ON public.questions
   FOR DELETE USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
 -- Create Policies for surveys
+DROP POLICY IF EXISTS "Anyone can view surveys" ON public.surveys;
 CREATE POLICY "Anyone can view surveys" ON public.surveys
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can insert surveys" ON public.surveys;
 CREATE POLICY "Authenticated users can insert surveys" ON public.surveys
   FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "Users can update own surveys" ON public.surveys;
 CREATE POLICY "Users can update own surveys" ON public.surveys
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own surveys" ON public.surveys;
 CREATE POLICY "Users can delete own surveys" ON public.surveys
   FOR DELETE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Admins can delete all surveys" ON public.surveys;
 CREATE POLICY "Admins can delete all surveys" ON public.surveys
   FOR DELETE USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
 -- Create Policies for answers
+DROP POLICY IF EXISTS "Anyone can view answers" ON public.answers;
 CREATE POLICY "Anyone can view answers" ON public.answers
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can insert answers" ON public.answers;
 CREATE POLICY "Authenticated users can insert answers" ON public.answers
   FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
@@ -153,12 +172,15 @@ VALUES ('survey-photos', 'survey-photos', true, 10485760, ARRAY['image/jpeg', 'i
 ON CONFLICT (id) DO NOTHING;
 
 -- Storage policies
+DROP POLICY IF EXISTS "Anyone can view survey photos" ON storage.objects;
 CREATE POLICY "Anyone can view survey photos" ON storage.objects
   FOR SELECT USING (bucket_id = 'survey-photos');
 
+DROP POLICY IF EXISTS "Authenticated users can upload survey photos" ON storage.objects;
 CREATE POLICY "Authenticated users can upload survey photos" ON storage.objects
   FOR INSERT WITH CHECK (bucket_id = 'survey-photos' AND auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "Users can delete own survey photos" ON storage.objects;
 CREATE POLICY "Users can delete own survey photos" ON storage.objects
   FOR DELETE USING (bucket_id = 'survey-photos' AND auth.uid() IS NOT NULL);
 
@@ -175,3 +197,10 @@ BEGIN
   );
   RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to automatically create profile on user signup
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
