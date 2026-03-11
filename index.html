@@ -28,64 +28,73 @@
   
   <!-- Login Page -->
   <div id="login-page" class="page">
-    <div class="min-h-screen flex flex-col">
+    <!-- Modern gradient background -->
+    <div class="min-h-screen flex flex-col justify-center" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
       <!-- Header -->
       <div class="flex-1 flex flex-col justify-center items-center px-6 py-12">
-        <!-- Logo -->
-        <div class="text-center mb-8">
-          <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-elevated">
-            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Logo & Title Row -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px;">
+          <div style="width: 56px; height: 56px; min-width: 56px; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 16px rgba(14, 165, 233, 0.25);">
+            <svg style="width: 28px; height: 28px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
             </svg>
           </div>
-          <h1 class="text-3xl font-bold text-gray-900">Survey Pro</h1>
-          <p class="text-gray-500 mt-2">Aplikasi Survey Lapangan Mobile</p>
+          <div>
+            <h1 style="font-size: 24px; font-weight: 700; color: #111827; letter-spacing: -0.025em; margin: 0;">Survey Pro</h1>
+            <p style="color: #6b7280; font-size: 12px; margin: 0;">Aplikasi Survey Lapangan</p>
+          </div>
         </div>
 
         <!-- Login Form -->
-        <form id="login-form" class="w-full max-w-sm space-y-4">
-          <div>
-            <label for="login-email" class="input-label">Email</label>
-            <input type="email" id="login-email" class="input" placeholder="email@anda.com" required autocomplete="email">
+        <form id="login-form" class="auth-card-modern w-full max-w-sm">
+          <div class="space-y-5">
+            <div>
+              <label for="login-email" class="input-label text-gray-700 font-medium mb-2 block">Email</label>
+              <input type="email" id="login-email" class="input-modern" placeholder="email@anda.com" required autocomplete="email">
+            </div>
+            <div>
+              <label for="login-password" class="input-label text-gray-700 font-medium mb-2 block">Password</label>
+              <input type="password" id="login-password" class="input-modern" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+            <div class="pt-2">
+              <button type="submit" id="login-btn" class="btn-modern w-full">
+                <span class="relative z-10">Masuk</span>
+              </button>
+            </div>
           </div>
-          <div>
-            <label for="login-password" class="input-label">Password</label>
-            <input type="password" id="login-password" class="input" placeholder="••••••••" required autocomplete="current-password">
-          </div>
-          <button type="submit" id="login-btn" class="btn-primary btn-lg w-full">
-            Masuk
-          </button>
         </form>
 
         <!-- Signup Form (Hidden by default) -->
-        <form id="signup-form" class="w-full max-w-sm space-y-4 hidden">
-          <div>
-            <label for="signup-name" class="input-label">Nama Lengkap</label>
-            <input type="text" id="signup-name" class="input" placeholder="Nama Anda" required>
+        <form id="signup-form" class="auth-card-modern w-full max-w-sm hidden">
+          <div class="space-y-5">
+            <div>
+              <label for="signup-name" class="input-label text-gray-700 font-medium mb-2 block">Nama Lengkap</label>
+              <input type="text" id="signup-name" class="input-modern" placeholder="Nama Anda" required>
+            </div>
+            <div>
+              <label for="signup-email" class="input-label text-gray-700 font-medium mb-2 block">Email</label>
+              <input type="email" id="signup-email" class="input-modern" placeholder="email@anda.com" required autocomplete="email">
+            </div>
+            <div>
+              <label for="signup-password" class="input-label text-gray-700 font-medium mb-2 block">Password</label>
+              <input type="password" id="signup-password" class="input-modern" placeholder="••••••••" required autocomplete="new-password">
+            </div>
+            <button type="submit" id="signup-btn" class="btn-modern w-full">
+              <span class="relative z-10">Daftar Sekarang</span>
+            </button>
           </div>
-          <div>
-            <label for="signup-email" class="input-label">Email</label>
-            <input type="email" id="signup-email" class="input" placeholder="email@anda.com" required autocomplete="email">
-          </div>
-          <div>
-            <label for="signup-password" class="input-label">Password</label>
-            <input type="password" id="signup-password" class="input" placeholder="••••••••" required autocomplete="new-password">
-          </div>
-          <button type="submit" id="signup-btn" class="btn-primary btn-lg w-full">
-            Daftar
-          </button>
         </form>
 
         <!-- Toggle Auth Mode -->
-        <div class="mt-6 text-center">
-          <button type="button" onclick="AuthPage.toggleAuthMode()" class="text-primary-600 font-medium hover:underline">
-            <span id="toggle-text">Belum punya akun? Daftar</span>
+        <div class="mt-8 text-center">
+          <button type="button" onclick="AuthPage.toggleAuthMode()" class="text-primary-600 font-semibold hover:text-primary-700 transition-colors">
+            <span id="toggle-text">Belum punya akun? <span class="underline">Daftar Gratis</span></span>
           </button>
         </div>
       </div>
 
       <!-- Footer -->
-      <div class="px-6 py-4 text-center text-sm text-gray-400">
+      <div class="px-6 py-6 text-center text-sm text-gray-400">
         © 2024 Survey Pro. All rights reserved.
       </div>
     </div>
@@ -93,26 +102,29 @@
 
   <!-- Dashboard Page -->
   <div id="dashboard-page" class="page hidden">
-    <!-- Mobile Header -->
-    <div class="mobile-header">
+    <!-- Mobile Header Modern -->
+    <div class="mobile-header card-modern mb-6" style="border-radius: 0 0 24px 24px;">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold text-gray-900">Dashboard</h1>
-        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-          <span class="text-sm font-bold text-primary-600" id="user-initial">U</span>
+        <div>
+          <h1 class="text-xl font-bold text-gray-900" style="letter-spacing: -0.025em;">Dashboard</h1>
+          <p class="text-sm text-gray-500">Selamat datang 👋</p>
+        </div>
+        <div class="avatar-modern avatar-sm-modern" id="user-initial">
+          U
         </div>
       </div>
     </div>
 
     <!-- Content -->
-    <div class="p-4 pb-24 space-y-4">
+    <div class="p-6 pb-28 space-y-6">
       <!-- Stats -->
       <div id="stats-container">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="stat-card">
-            <div class="spinner"></div>
+        <div class="grid grid-cols-2 gap-6">
+          <div class="stat-card-modern">
+            <div class="spinner-modern mx-auto"></div>
           </div>
-          <div class="stat-card">
-            <div class="spinner"></div>
+          <div class="stat-card-modern">
+            <div class="spinner-modern mx-auto"></div>
           </div>
         </div>
       </div>
@@ -146,18 +158,20 @@
   <!-- Survey Page -->
   <div id="survey-page" class="page hidden">
     <!-- Mobile Header -->
-    <div class="mobile-header">
+    <div class="mobile-header card-modern mb-6" style="border-radius: 0 0 24px 24px;">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold text-gray-900">Survey</h1>
-        <span class="text-sm text-gray-500">Pilih form</span>
+        <div>
+          <h1 class="text-xl font-bold text-gray-900" style="letter-spacing: -0.025em;">Survey</h1>
+          <p class="text-sm text-gray-500">Pilih form</p>
+        </div>
       </div>
     </div>
 
     <!-- Content -->
-    <div class="p-4 pb-24">
-      <div id="forms-list" class="space-y-3">
-        <div class="card py-8 text-center">
-          <div class="spinner mx-auto"></div>
+    <div class="p-6 pb-28">
+      <div id="forms-list" class="space-y-4">
+        <div class="card-modern py-10 text-center">
+          <div class="spinner-modern mx-auto"></div>
         </div>
       </div>
     </div>
@@ -196,11 +210,14 @@
   <!-- Data Page -->
   <div id="data-page" class="page hidden">
     <!-- Mobile Header -->
-    <div class="mobile-header">
+    <div class="mobile-header card-modern mb-6" style="border-radius: 0 0 24px 24px;">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold text-gray-900">Data Survey</h1>
+        <div>
+          <h1 class="text-xl font-bold text-gray-900" style="letter-spacing: -0.025em;">Data Survey</h1>
+          <p class="text-sm text-gray-500">Lihat semua survey</p>
+        </div>
         <div class="flex items-center gap-2">
-          <button onclick="DataPage.exportData('csv')" class="p-2 text-gray-600 hover:bg-surface-100 rounded-lg" title="Export CSV">
+          <button onclick="DataPage.exportData('csv')" class="p-3 text-gray-600 hover:bg-surface-100 rounded-xl" title="Export CSV">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
@@ -210,12 +227,12 @@
     </div>
 
     <!-- Content -->
-    <div class="p-4 pb-24 space-y-4">
+    <div class="p-6 pb-28 space-y-6">
       <!-- Filters -->
       <div id="data-filters"></div>
 
       <!-- Surveys List -->
-      <div id="surveys-list" class="space-y-3"></div>
+      <div id="surveys-list" class="space-y-4"></div>
     </div>
 
     <!-- Detail Modal -->
@@ -261,45 +278,48 @@
   <!-- Profile Page -->
   <div id="profile-page" class="page hidden">
     <!-- Mobile Header -->
-    <div class="mobile-header">
+    <div class="mobile-header card-modern mb-6" style="border-radius: 0 0 24px 24px;">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold text-gray-900">Profil</h1>
+        <div>
+          <h1 class="text-xl font-bold text-gray-900" style="letter-spacing: -0.025em;">Profil</h1>
+          <p class="text-sm text-gray-500">Kelola akun</p>
+        </div>
         <div class="w-8"></div>
       </div>
     </div>
 
     <!-- Content -->
-    <div class="p-4 pb-24">
+    <div class="p-6 pb-28">
       <div id="profile-content"></div>
     </div>
   </div>
 
   <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
+  <nav class="bottom-nav bottom-nav-modern" style="padding: 0.75rem 0.5rem; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0));">
     <div class="flex items-center justify-around">
-      <a href="#" class="bottom-nav-item active" data-page="dashboard">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <a href="#" class="bottom-nav-item-modern active" data-page="dashboard">
+        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
-        <span class="text-xs mt-1">Home</span>
+        <span>Home</span>
       </a>
-      <a href="#" class="bottom-nav-item" data-page="survey">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <a href="#" class="bottom-nav-item-modern" data-page="survey">
+        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        <span class="text-xs mt-1">Survey</span>
+        <span>Survey</span>
       </a>
-      <a href="#" class="bottom-nav-item" data-page="data">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <a href="#" class="bottom-nav-item-modern" data-page="data">
+        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
         </svg>
-        <span class="text-xs mt-1">Data</span>
+        <span>Data</span>
       </a>
-      <a href="#" class="bottom-nav-item" data-page="profile">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <a href="#" class="bottom-nav-item-modern" data-page="profile">
+        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
         </svg>
-        <span class="text-xs mt-1">Profil</span>
+        <span>Profil</span>
       </a>
     </div>
   </nav>

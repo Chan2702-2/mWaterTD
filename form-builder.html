@@ -13,36 +13,36 @@
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="min-h-screen bg-surface-50">
+<body class="min-h-screen" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
   
   <!-- Form Builder Page -->
   <div id="form-builder-page">
     <!-- Mobile Header -->
-    <div class="mobile-header">
+    <div class="mobile-header card-modern mb-6" style="border-radius: 0 0 24px 24px;">
       <div class="flex items-center justify-between">
-        <button onclick="window.location.href='index.html'" class="p-2 -ml-2 hover:bg-surface-100 rounded-lg">
+        <button onclick="window.location.href='index.html'" class="p-3 -ml-2 hover:bg-surface-100 rounded-xl transition-colors">
           <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
         </button>
-        <h1 class="text-lg font-bold text-gray-900">Buat Form Survey</h1>
-        <button onclick="FormBuilder.saveForm()" class="text-primary-600 font-medium text-sm">
+        <h1 class="text-xl font-bold text-gray-900" style="letter-spacing: -0.025em;">Buat Form Survey</h1>
+        <button onclick="FormBuilder.saveForm()" class="text-primary-600 font-semibold text-sm px-4 py-2 rounded-xl hover:bg-primary-50 transition-colors">
           Simpan
         </button>
       </div>
     </div>
 
     <!-- Content -->
-    <div class="p-4 pb-24 space-y-4">
+    <div class="p-6 pb-28 space-y-6">
       <!-- Form Title -->
-      <div class="card">
+      <div class="card-modern p-6">
         <div class="form-field mb-0">
-          <label class="input-label">Judul Form</label>
-          <input type="text" id="form-title" class="input" placeholder="Survey Kepuasan Pelanggan">
+          <label class="input-label text-gray-700 font-medium mb-3 block">Judul Form</label>
+          <input type="text" id="form-title" class="input-modern" placeholder="Survey Kepuasan Pelanggan">
         </div>
-        <div class="form-field mb-0 mt-4">
-          <label class="input-label">Deskripsi (Opsional)</label>
-          <textarea id="form-description" class="form-field-textarea min-h-[80px]" placeholder="Deskripsi singkat tentang survey ini"></textarea>
+        <div class="form-field mb-0 mt-5">
+          <label class="input-label text-gray-700 font-medium mb-3 block">Deskripsi (Opsional)</label>
+          <textarea id="form-description" class="input-modern min-h-[100px] resize-none" placeholder="Deskripsi singkat tentang survey ini"></textarea>
         </div>
       </div>
 
@@ -52,7 +52,7 @@
       </div>
 
       <!-- Add Question Button -->
-      <button onclick="FormBuilder.addQuestion()" class="btn-secondary btn-lg w-full">
+      <button onclick="FormBuilder.addQuestion()" class="btn-modern-secondary btn-lg w-full py-4">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
@@ -60,7 +60,7 @@
       </button>
 
       <!-- Preview Button -->
-      <button onclick="FormBuilder.previewForm()" class="btn-ghost btn-lg w-full">
+      <button onclick="FormBuilder.previewForm()" class="btn-ghost btn-lg w-full py-4 border-2 border-dashed border-surface-300">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -71,13 +71,15 @@
 
     <!-- Question Type Modal -->
     <div id="question-type-modal" class="modal-overlay hidden">
-      <div class="modal-content p-6">
-        <h2 class="text-lg font-bold text-gray-900 mb-4">Pilih Tipe Pertanyaan</h2>
-        <div class="grid grid-cols-2 gap-3">
-          <button onclick="FormBuilder.selectQuestionType('text')" class="btn-secondary p-4 flex flex-col items-center">
-            <svg class="w-8 h-8 text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="modal-modern p-6" style="max-width: 400px;">
+        <h2 class="text-xl font-bold text-gray-900 mb-6" style="letter-spacing: -0.025em;">Pilih Tipe Pertanyaan</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <button onclick="FormBuilder.selectQuestionType('text')" class="card-modern p-5 flex flex-col items-center text-center hover:border-primary-300 transition-colors">
+            <svg class="w-10 h-10 text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
             </svg>
+            <span class="font-medium text-gray-700">Teks</span>
+          </button>
             <span class="text-sm">Teks</span>
           </button>
           <button onclick="FormBuilder.selectQuestionType('number')" class="btn-secondary p-4 flex flex-col items-center">
