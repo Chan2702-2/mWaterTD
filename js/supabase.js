@@ -1,11 +1,11 @@
 // Supabase Configuration
-// Replace these values with your Supabase project credentials
+// Using CDN - no local credentials needed
 
-const SUPABASE_URL = 'https://xmvikikzktwzsiuxqilw.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtdmlraWt6a3R3enNpdXhxaWx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg4MTMsImV4cCI6MjA4ODgxNDgxM30.L25WMkUsGOdMyskFQhisOjxTgjF6q6s5cOZ9Uj_AU1s';
-
-// Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Get Supabase from global window object (loaded via CDN)
+const supabase = window.supabase.createClient(
+  'https://xmvikikzktwzsiuxqilw.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtdmlraWt6a3R3enNpdXhxaWx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzg4MTMsImV4cCI6MjA4ODgxNDgxM30.L25WMkUsGOdMyskFQhisOjxTgjF6q6s5cOZ9Uj_AU1s'
+);
 
 // Database Schema Configuration
 const DB_SCHEMA = {

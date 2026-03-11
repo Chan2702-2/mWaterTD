@@ -1097,18 +1097,24 @@ const AuthPage = {
     btn.innerHTML = '<span class="spinner"></span>';
 
     try {
+      console.log('[DEBUG] Starting signup for:', email);
       const data = await window.SurveyApp.Auth.signUp(email, password, {
         name,
         role: 'surveyor'
       });
       
+      console.log('[DEBUG] Signup response:', JSON.stringify(data, null, 2));
+      
       if (data.session) {
         alert('Registrasi berhasil! Anda akan diarahkan ke dashboard.');
       } else {
+        // Check if user was created but needs email confirmation
+        console.log('[DEBUG] No session, user created:', data.user);
         alert('Registrasi berhasil! Silakan verifikasi email Anda.');
       }
     } catch (error) {
       console.error('Signup error:', error);
+      console.error('Error details:', error.message, error.status);
       alert('Registrasi gagal: ' + error.message);
       btn.disabled = false;
       btn.innerHTML = 'Daftar';

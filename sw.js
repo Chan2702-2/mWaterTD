@@ -7,12 +7,9 @@ const STATIC_ASSETS = [
   '/css/styles.css',
   '/js/supabase.js',
   '/js/app.js',
-  '/manifest.json',
-  'https://cdn.tailwindcss.com',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
+  '/manifest.json'
+  // Note: External CDNs (Tailwind, Supabase, Leaflet, Fonts) are NOT cached here
+  // They are loaded directly from their CDNs and cached by the browser
 ];
 
 // Install event - cache static assets
